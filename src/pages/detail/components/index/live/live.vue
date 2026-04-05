@@ -1,6 +1,8 @@
 <template>
   <view class="u-p-y-30 u-p-x-20">
     <yx-sheet :margin="[0, 0]" :round="3" :shadow="2">
+      <u-button class="u-m-b-20" plain type="primary" @click="GoAI">AI 命理解读</u-button>
+
       <view v-if="!option.list.length">
         <view class="u-flex u-row-center">
           <u-image :height="400" :src="getUrl(`static/icon/other/coding.svg`)" :width="400"
@@ -33,6 +35,7 @@ import {ref} from 'vue';
 import {GetPrediction} from '@/api/default';
 import {getUrl} from "@/utils/file";
 import {useDetailStore} from "@/store/detail";
+import {toAI, toAIWithTime} from "@/utils/router";
 
 const option = ref({
   loading: false,
@@ -40,6 +43,18 @@ const option = ref({
 });
 
 const detailStore = useDetailStore()
+
+function GoAI() {
+  if (detailStore.timestamp) {
+    toAIWithTime({
+      time: detailStore.timestamp,
+      gender: detailStore.gender,
+    })
+    return;
+  }
+
+  toAI()
+}
 
 function Computed() {
   uni.showLoading({

@@ -68,14 +68,12 @@
 import {reactive, ref, watch} from "vue";
 import {onLoad} from "@dcloudio/uni-app";
 import {Solar} from "lunar-javascript";
-import {deleteLocalStorage, getLocalStorage, setLocalStorage} from "@/utils/cache";
-import {GetBook, GetInfo} from "@/api/default";
+import {deleteLocalStorage, getLocalStorage} from "@/utils/cache";
 import {useDetailStore} from "@/store/detail";
 import {firstStringToUpperCase, timeFormat} from "@/utils/transform";
 import {toDetail} from "@/utils/router";
-import {useTendStore} from "@/store/tend";
 import {PILLAR_FIELD} from "@/config/map";
-import {useBookStore} from "@/store/book";
+import {CHART_PREPARE_ERROR, prepareChart} from "@/utils/chart";
 
 const options = ref({
   gender:[{value:1,label:'男'},{value:2,label:'女'},],
@@ -103,8 +101,6 @@ const form = reactive({
 })
 
 const detailStore = useDetailStore();
-const tendStore = useTendStore();
-const bookStore = useBookStore();
 
 const solarSelectShow = ref(false);
 
@@ -194,34 +190,31 @@ async function Sumbit() {
     SelectTime();
     return;
   }
-  const name = uni.$u.test.isEmpty(form.realname) ? "不知名网友" : form.realname;
-
-  const payload = {
-    realname: name,
-    timestamp: datetime,
-    gender: form.gender,
-    sect: form.sect,
-  }
 
   uni.showLoading({
     title: "请求数据中！"
   })
 
-  detailStore.set(payload)
-  setLocalStorage("info", JSON.stringify(payload));
-  try{
-    await GetInfo(detailStore.defaultPayload).then(res=>detailStore.set(res)).catch(()=>{throw 0});
-    await GetBook(detailStore.defaultPayload).then(res=>bookStore.set(res)).catch(() =>{throw 1});
-  }catch (e) {
-    const msg = ["获取命盘信息失败！","获取命盘古籍失败！"];
+  try {
+    await prepareChart({
+      realname: form.realname,
+      timestamp: datetime,
+      gender: form.gender,
+      sect: form.sect,
+    })
+  } catch (error) {
+    const msgMap = {
+      [CHART_PREPARE_ERROR.GET_INFO]: "获取命盘信息失败！",
+      [CHART_PREPARE_ERROR.GET_BOOK]: "获取命盘古籍失败！",
+    }
     uni.hideLoading();
-    setTimeout(()=>{
-      msg[e] && uni.$u.toast(msg[e],3000)
-    },800)
+    setTimeout(() => {
+      uni.$u.toast(msgMap[error.message] || "请求数据失败！", 3000)
+    }, 800)
     return;
   }
+
   uni.hideLoading();
-  tendStore.pull(payload);
   toDetail()
 }
 </script>
