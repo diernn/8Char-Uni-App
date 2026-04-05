@@ -24,6 +24,15 @@
 				"titlePenetrate": "YES",
 				"transparentTitle": "always"
 			}
+		},
+		{
+			"path": "pages/ai/index",
+			"style": {
+				"navigationBarTitleText": "四柱易学-阿轩的Bug",
+				"navigationStyle": "custom",
+				"titlePenetrate": "YES",
+				"transparentTitle": "always"
+			}
 		}
 	],
 	"globalStyle": {

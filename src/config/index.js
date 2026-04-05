@@ -8,4 +8,6 @@ export const API_VERSION = "0.0.1";
 export const CACHE_PREFIX = 'yx-app-8char';
 export const CACHE_CLEAR_CYCLE = 2 * (24 * 3600 * 1000);  // 2天
 export const BASE_URL = import.meta.env.VITE_APP_BASE_URL || './';
+export const LLM_API_URL = import.meta.env.VITE_LLM_API_URL || '';
+export const LLM_MODEL = import.meta.env.VITE_LLM_MODEL || '';
 export const GIT_URL = "https://gitee.com/yxbug/8Char-H5";
