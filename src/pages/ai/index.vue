@@ -67,6 +67,11 @@
           <view class="ai-page__flag">AI 生成</view>
         </view>
 
+        <view class="ai-page__toolbar">
+          <u-button plain size="mini" type="primary" @click="CopyResult">复制全文</u-button>
+          <u-button :loading="state.loading" size="mini" type="primary" @click="Regenerate">重新生成</u-button>
+        </view>
+
         <view class="ai-page__summary">
           <text class="ai-page__summary-label">解读摘要</text>
           <text class="ai-page__summary-content">{{ state.summaryText }}</text>
@@ -131,12 +136,14 @@ import { reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { Solar } from 'lunar-javascript';
 import { GetAIInterpretation } from '@/api/ai';
-import { getLocalStorage } from '@/utils/cache';
+import { getLocalStorage, setLocalStorage } from '@/utils/cache';
 import { CHART_PREPARE_ERROR, prepareChart } from '@/utils/chart';
 import { timeFormat } from '@/utils/transform';
 import { useBookStore } from '@/store/book';
 import { useDetailStore } from '@/store/detail';
 import { useTendStore } from '@/store/tend';
+
+const AI_REGION_CACHE_KEY = 'ai-region';
 
 const options = ref({
   gender: [{ value: 1, label: '男' }, { value: 2, label: '女' }],
@@ -326,6 +333,35 @@ const fillBaseForm = payload => {
   updateDatetimeLabel();
 };
 
+const applyRegion = region => {
+  form.birthProvince = region?.birthProvince || '';
+  form.birthCity = region?.birthCity || '';
+  form.birthDistrict = region?.birthDistrict || '';
+  form.defaultRegion = [form.birthProvince, form.birthCity, form.birthDistrict].filter(Boolean);
+  form.birthRegionLabel = form.defaultRegion.join(' ');
+};
+
+const loadRegionCache = () => {
+  const raw = getLocalStorage(AI_REGION_CACHE_KEY);
+  if (!raw) {
+    return;
+  }
+
+  try {
+    applyRegion(JSON.parse(raw));
+  } catch (error) {
+    applyRegion(null);
+  }
+};
+
+const saveRegionCache = () => {
+  setLocalStorage(AI_REGION_CACHE_KEY, JSON.stringify({
+    birthProvince: form.birthProvince,
+    birthCity: form.birthCity,
+    birthDistrict: form.birthDistrict,
+  }));
+};
+
 const buildProfile = () => {
   return {
     姓名: form.realname || '不知名网友',
@@ -398,6 +434,7 @@ onLoad((query) => {
   }
 
   fillBaseForm(nextPayload);
+  loadRegionCache();
 });
 
 function SelectTime() {
@@ -416,11 +453,32 @@ function SolarConfirm(params) {
 }
 
 function RegionConfirm(params) {
-  form.birthProvince = params.province?.name || '';
-  form.birthCity = params.city?.name || '';
-  form.birthDistrict = params.area?.name || '';
-  form.defaultRegion = [form.birthProvince, form.birthCity, form.birthDistrict].filter(Boolean);
-  form.birthRegionLabel = form.defaultRegion.join(' ');
+  applyRegion({
+    birthProvince: params.province?.name || '',
+    birthCity: params.city?.name || '',
+    birthDistrict: params.area?.name || '',
+  });
+  saveRegionCache();
+}
+
+async function RunAIInterpretation() {
+  await prepareChart({
+    realname: form.realname,
+    timestamp: form.timestamp,
+    gender: form.gender,
+    sect: form.sect,
+  });
+
+  const result = await GetAIInterpretation({
+    profile: buildProfile(),
+    chart: buildChart(),
+    instruction: buildInstruction(),
+  });
+
+  const sections = parseResultSections(result.content);
+  state.resultText = result.content;
+  state.resultSections = sections;
+  state.summaryText = getSummaryText(result.content, sections);
 }
 
 async function Submit() {
@@ -440,23 +498,7 @@ async function Submit() {
   });
 
   try {
-    await prepareChart({
-      realname: form.realname,
-      timestamp: form.timestamp,
-      gender: form.gender,
-      sect: form.sect,
-    });
-
-    const result = await GetAIInterpretation({
-      profile: buildProfile(),
-      chart: buildChart(),
-      instruction: buildInstruction(),
-    });
-
-    const sections = parseResultSections(result.content);
-    state.resultText = result.content;
-    state.resultSections = sections;
-    state.summaryText = getSummaryText(result.content, sections);
+    await RunAIInterpretation();
   } catch (error) {
     setTimeout(() => {
       uni.$u.toast(getErrorMessage(error), 3000);
@@ -465,6 +507,24 @@ async function Submit() {
     state.loading = false;
     uni.hideLoading();
   }
+}
+
+function Regenerate() {
+  Submit();
+}
+
+function CopyResult() {
+  if (!state.resultText) {
+    uni.$u.toast('暂无可复制内容');
+    return;
+  }
+
+  uni.setClipboardData({
+    data: state.resultText,
+    success() {
+      uni.$u.toast('解读内容已复制');
+    }
+  });
 }
 </script>
 
@@ -518,6 +578,13 @@ async function Submit() {
   background: rgba(41, 121, 255, 0.12);
   font-size: 22rpx;
   color: #2979ff;
+}
+
+.ai-page__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 20rpx;
 }
 
 .ai-page__summary {
