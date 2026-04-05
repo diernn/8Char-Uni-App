@@ -42,6 +42,32 @@ yarn run dev:%PLATFORM%
 yarn run build:%PLATFORM%
 ```
 
+## AI 命理解读配置
+项目已新增独立的 `AI 命理解读` 页面，支持通过 OpenAI 协议兼容接口调用大模型，对当前排盘结果做进一步分析。
+
+请在 `.env.development` / `.env.production` 中补充以下配置：
+
+```env
+VITE_LLM_API_URL="https://your-openai-compatible-host/v1"
+VITE_LLM_API_KEY="your-api-key"
+VITE_LLM_MODEL="gpt-4o-mini"
+```
+
+说明：
+- `VITE_LLM_API_URL` 只需要配置到接口根路径，代码会自动拼接 `/chat/completions`
+- `VITE_LLM_MODEL` 支持任意 OpenAI 协议兼容模型名
+- AI 页面会收集姓名、性别、阳历出生年月日时分、出生地（省 + 县/区），并结合排盘、流运、称骨、古籍等数据生成分析
+- 当前 AI 返回结果仅供学习研究参考，请勿直接作为医疗、投资等重大决策依据
+
+### 风险说明
+由于本项目是前端 Uni-App 应用，`VITE_LLM_API_KEY` 会随前端产物一起暴露到浏览器端。
+
+这意味着：
+- 该方案仅适合自用、演示或受控环境
+- **不适合** 直接用于公开商用场景
+- 若需要更安全的生产方案，建议改成后端代理模式，由服务端保存真实 API Key
+
+
 ``%PLATFORM%`` 可取值如下：
 
 |值|平台|

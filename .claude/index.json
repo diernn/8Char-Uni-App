@@ -1,0 +1,369 @@
+{
+  "generated_at": "2026-04-05T21:09:37+08:00",
+  "provided_timestamp": "2026-04-05 21:09:37",
+  "root": "E:/works/AI/code/8Char",
+  "scan_mode": "模块扫描",
+  "truncated": false,
+  "coverage": {
+    "estimated_total_files": 89,
+    "scanned_files": 72,
+    "coverage_pct": 80.90,
+    "identified_modules": 7,
+    "covered_modules": 7,
+    "module_coverage_pct": 100
+  },
+  "ignore_patterns": [
+    "/node_modules/",
+    "/.idea/",
+    "/dist/",
+    "/.hbuilderx/",
+    "/unpackage/keystore/",
+    "yarn.lock",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "node_modules/**",
+    ".git/**",
+    ".github/**",
+    "dist/**",
+    "build/**",
+    ".next/**",
+    "__pycache__/**",
+    "*.lock",
+    "*.log",
+    "*.bin",
+    "*.pdf",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.mp4",
+    "*.zip",
+    "*.tar",
+    "*.gz"
+  ],
+  "ignored_summary": [
+    {
+      "path": ".git",
+      "reason": "ignored by merged ignore rules"
+    },
+    {
+      "path": "node_modules",
+      "reason": "ignored by merged ignore rules or not present"
+    },
+    {
+      "path": "dist",
+      "reason": "ignored by merged ignore rules or not present"
+    },
+    {
+      "path": "unpackage/keystore",
+      "reason": "ignored by merged ignore rules or not present"
+    },
+    {
+      "path": ".claude/worktrees",
+      "reason": "duplicate repository worktrees created by CLI; skipped to avoid double counting"
+    },
+    {
+      "path": "src/static",
+      "reason": "static assets inventoried by path only; content not deeply read"
+    }
+  ],
+  "modules": [
+    {
+      "path": "src/api",
+      "role": "后端接口声明层",
+      "language": "JavaScript",
+      "entry_files": [
+        "src/api/default.js"
+      ],
+      "interface_files": [
+        "src/api/default.js"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        "src/utils/request.js",
+        ".env.development",
+        ".env.production"
+      ],
+      "important_paths": [
+        "src/api/default.js",
+        "src/utils/request.js"
+      ],
+      "coverage": {
+        "estimated_files": 1,
+        "scanned_files": 1,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现接口契约测试或响应类型定义"
+      ]
+    },
+    {
+      "path": "src/config",
+      "role": "应用常量与命理映射",
+      "language": "JavaScript",
+      "entry_files": [
+        "src/config/index.js"
+      ],
+      "interface_files": [
+        "src/config/index.js",
+        "src/config/map.js",
+        "src/config/offset.js"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        ".env.development",
+        ".env.production"
+      ],
+      "important_paths": [
+        "src/config/index.js",
+        "src/config/map.js",
+        "src/config/offset.js"
+      ],
+      "coverage": {
+        "estimated_files": 3,
+        "scanned_files": 3,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现映射表校验测试"
+      ]
+    },
+    {
+      "path": "src/pages/home",
+      "role": "首页录入与首轮请求",
+      "language": "Vue SFC + JavaScript",
+      "entry_files": [
+        "src/pages/home/home.vue"
+      ],
+      "interface_files": [
+        "src/pages/home/components/index/sheet/sheet.vue",
+        "src/pages/home/components/index/bottom/bottom.vue"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        "src/pages.json"
+      ],
+      "important_paths": [
+        "src/pages/home/home.vue",
+        "src/pages/home/components/index/head/head.vue",
+        "src/pages/home/components/index/sheet/sheet.vue",
+        "src/pages/home/components/index/bottom/bottom.vue",
+        "src/pages/home/components/index/bottom/config.js"
+      ],
+      "coverage": {
+        "estimated_files": 5,
+        "scanned_files": 5,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现首页交互测试，且头部品牌区、底部外链与清缓存行为仍缺展示一致性验证"
+      ]
+    },
+    {
+      "path": "src/pages/detail",
+      "role": "结果页与细盘展示",
+      "language": "Vue SFC + JavaScript",
+      "entry_files": [
+        "src/pages/detail/index.vue"
+      ],
+      "interface_files": [
+        "src/pages/detail/components/index/live/live.vue",
+        "src/pages/detail/components/index/basic/components/tabel/tabel.vue",
+        "src/pages/detail/components/index/basic/components/book/book.vue",
+        "src/pages/detail/components/index/common/header/header.vue",
+        "src/pages/detail/components/index/detail/components/detail/detail.vue",
+        "src/pages/detail/components/index/major/components/scroll/scroll.vue"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        "src/pages.json"
+      ],
+      "important_paths": [
+        "src/pages/detail/index.vue",
+        "src/pages/detail/components/index/basic/basic.vue",
+        "src/pages/detail/components/index/basic/components/tabel/tabel.vue",
+        "src/pages/detail/components/index/basic/components/relation/relation.vue",
+        "src/pages/detail/components/index/basic/components/book/book.vue",
+        "src/pages/detail/components/index/common/header/header.vue",
+        "src/pages/detail/components/index/common/pro-decl/pro-decl.vue",
+        "src/pages/detail/components/index/detail/detail.vue",
+        "src/pages/detail/components/index/detail/components/detail/detail.vue",
+        "src/pages/detail/components/index/detail/components/detail/detail-item.vue",
+        "src/pages/detail/components/index/detail/components/elements/elements.vue",
+        "src/pages/detail/components/index/detail/components/weigh-bone/weigh-bone.vue",
+        "src/pages/detail/components/index/major/major.vue",
+        "src/pages/detail/components/index/major/components/detail/detail.vue",
+        "src/pages/detail/components/index/major/components/scroll/scroll.vue",
+        "src/pages/detail/components/index/major/components/scroll/scroll-list.vue",
+        "src/pages/detail/components/index/live/live.vue"
+      ],
+      "coverage": {
+        "estimated_files": 18,
+        "scanned_files": 18,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现结果页自动化测试，尤其缺少基础命盘表、关系摘要、五行区与滚动轴映射回归测试"
+      ]
+    },
+    {
+      "path": "src/store",
+      "role": "Pinia 状态与本地流运计算",
+      "language": "JavaScript",
+      "entry_files": [
+        "src/store/detail.js",
+        "src/store/book.js",
+        "src/store/tend.js",
+        "src/store/tips.js"
+      ],
+      "interface_files": [
+        "src/store/detail.js",
+        "src/store/tend.js"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        "src/config/map.js",
+        "src/config/offset.js"
+      ],
+      "important_paths": [
+        "src/store/detail.js",
+        "src/store/book.js",
+        "src/store/tend.js",
+        "src/store/tips.js"
+      ],
+      "coverage": {
+        "estimated_files": 4,
+        "scanned_files": 4,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现 store 单元测试，尤其缺少 tend.js 回归测试"
+      ]
+    },
+    {
+      "path": "src/utils",
+      "role": "请求、缓存、路由与启动辅助",
+      "language": "JavaScript",
+      "entry_files": [
+        "src/utils/launch.js",
+        "src/utils/request.js"
+      ],
+      "interface_files": [
+        "src/utils/request.js",
+        "src/utils/router.js",
+        "src/utils/version.js",
+        "src/utils/tips.js"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        ".env.development",
+        ".env.production",
+        "src/config/index.js"
+      ],
+      "important_paths": [
+        "src/utils/cache.js",
+        "src/utils/file.js",
+        "src/utils/launch.js",
+        "src/utils/request.js",
+        "src/utils/router.js",
+        "src/utils/tips.js",
+        "src/utils/transform.js",
+        "src/utils/version.js"
+      ],
+      "coverage": {
+        "estimated_files": 8,
+        "scanned_files": 8,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现请求层、tips 预热与版本检查逻辑的测试，尤其缺少缓存命中/失效分支验证"
+      ]
+    },
+    {
+      "path": "src/yxbug-cn",
+      "role": "本地通用组件库",
+      "language": "Vue SFC",
+      "entry_files": [
+        "src/pages.json"
+      ],
+      "interface_files": [
+        "src/yxbug-cn/yx-sheet/yx-sheet.vue",
+        "src/yxbug-cn/yx-input/yx-input.vue",
+        "src/yxbug-cn/yx-pillar-picker/yx-pillar-picker.vue",
+        "src/yxbug-cn/yx-book-tips/yx-book-tips.vue",
+        "src/yxbug-cn/yx-pillar-relation/yx-pillar-relation.vue",
+        "src/yxbug-cn/yx-coding/yx-coding.vue"
+      ],
+      "test_paths": [],
+      "config_paths": [
+        "src/pages.json"
+      ],
+      "important_paths": [
+        "src/yxbug-cn/yx-sheet/yx-sheet.vue",
+        "src/yxbug-cn/yx-input/yx-input.vue",
+        "src/yxbug-cn/yx-nav-header/yx-nav-header.vue",
+        "src/yxbug-cn/yx-pillar-picker/yx-pillar-picker.vue",
+        "src/yxbug-cn/yx-book-tips/yx-book-tips.vue",
+        "src/yxbug-cn/yx-pillar-relation/yx-pillar-relation.vue",
+        "src/yxbug-cn/yx-coding/yx-coding.vue",
+        "src/yxbug-cn/yx-copyright/yx-copyright.vue"
+      ],
+      "coverage": {
+        "estimated_files": 8,
+        "scanned_files": 8,
+        "coverage_pct": 100
+      },
+      "gaps": [
+        "未发现组件测试"
+      ]
+    }
+  ],
+  "root_files_scanned": [
+    ".gitignore",
+    "README.md",
+    "package.json",
+    "vite.config.js",
+    "jsconfig.json",
+    ".env.development",
+    ".env.production",
+    "src/main.js",
+    "src/App.vue",
+    "src/pages.json",
+    "src/manifest.json",
+    "src/uni.scss",
+    "src/style/index.scss",
+    "src/style/theme.scss"
+  ],
+  "gaps": [
+    {
+      "path": "repository",
+      "missing": [
+        "未发现 test / lint / unit test 配置"
+      ]
+    },
+    {
+      "path": "src/pages/detail/components/index/basic/components/book/book.vue",
+      "missing": [
+        "古籍展示空态与页签越界兜底仍缺失自动化验证"
+      ]
+    },
+    {
+      "path": "src/pages/detail/components/index/live/live.vue",
+      "missing": [
+        "在线批命失败恢复、重试与持久化策略仍未建立"
+      ]
+    },
+    {
+      "path": "src/store/tend.js",
+      "missing": [
+        "SkipCurrentTime 与节气边界逻辑仍缺少回归测试"
+      ]
+    }
+  ],
+  "next_priority_paths": [
+    "src/pages/detail/components/index/major/major.vue",
+    "src/pages/detail/components/index/basic/basic.vue",
+    "src/pages/home/components/index/bottom/bottom.vue",
+    "src/utils/file.js"
+  ]
+}

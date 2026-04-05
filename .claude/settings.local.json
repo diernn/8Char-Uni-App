@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(zcf:init-project)",
+      "Bash(git:*)",
+      "Bash(yarn run:*)",
+      "Bash(npm:*)",
+      "Bash(pnpm:*)"
+    ]
+  }
+}
