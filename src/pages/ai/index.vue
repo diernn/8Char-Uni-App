@@ -3,111 +3,24 @@
     <u-navbar :is-back="true" title="AI 命理解读" title-bold title-color="#333333"></u-navbar>
 
     <view class="ai-page__body">
-      <yx-sheet :margin="[32, 24]" :round="3">
-        <view class="ai-page__header">
-          <text class="ai-page__title">AI 命理解读</text>
-          <text class="ai-page__desc">结合排盘、流运、古籍与出生地信息，生成更具体的佩戴、颜色与近期建议。</text>
-        </view>
+      <ai-form-card
+        :form="form"
+        :loading="state.loading"
+        :options="options"
+        @select-time="SelectTime"
+        @select-region="SelectRegion"
+        @submit="Submit"
+        @update:realname="form.realname = $event"
+        @update:gender="form.gender = $event"
+        @update:sect="form.sect = $event"
+      ></ai-form-card>
 
-        <u-form :model="form">
-          <u-form-item :border-bottom="false">
-            <yx-input v-model="form.realname" border placeholder="请输入姓名（可空）">
-              <template #icon>
-                <u-icon name="account-fill"></u-icon>
-              </template>
-            </yx-input>
-          </u-form-item>
-
-          <u-form-item :border-bottom="false">
-            <u-radio-group v-model="form.gender">
-              <u-radio v-for="item in options.gender" :key="item.value" :name="item.value">{{ item.label }}</u-radio>
-            </u-radio-group>
-          </u-form-item>
-
-          <u-form-item :border-bottom="false">
-            <yx-input v-model="form.datetimeLabel" margin="12" disabled placeholder="请选择阳历出生时间" @click="SelectTime">
-              <template #icon>
-                <u-icon name="calendar-fill"></u-icon>
-              </template>
-            </yx-input>
-          </u-form-item>
-
-          <u-form-item v-if="form.lunarLabel" :border-bottom="false">
-            <yx-input v-model="form.lunarLabel" margin="12" disabled>
-              <template #icon>
-                <u-icon name="tags-fill"></u-icon>
-              </template>
-            </yx-input>
-          </u-form-item>
-
-          <u-form-item :border-bottom="false">
-            <u-radio-group v-model="form.sect">
-              <u-radio v-for="item in options.sect" :key="item.value" :name="item.value">{{ item.label }}</u-radio>
-            </u-radio-group>
-          </u-form-item>
-
-          <u-form-item :border-bottom="false">
-            <yx-input v-model="form.birthRegionLabel" border disabled placeholder="请选择出生地（省/市/区）" @click="SelectRegion">
-              <template #icon>
-                <u-icon name="map-fill"></u-icon>
-              </template>
-            </yx-input>
-          </u-form-item>
-
-          <u-button :loading="state.loading" class="u-m-t-10" type="primary" @click="Submit">生成 AI 解读</u-button>
-        </u-form>
-      </yx-sheet>
-
-      <yx-sheet v-if="state.resultText" :margin="[32, 0, 32, 32]" :round="3">
-        <view class="ai-page__result-head">
-          <view class="ai-page__header ai-page__header--result">
-            <text class="ai-page__title ai-page__title--small">解读结果</text>
-            <text class="ai-page__desc">以下内容由 AI 基于当前排盘数据生成，仅供学习研究参考。</text>
-          </view>
-          <view class="ai-page__flag">AI 生成</view>
-        </view>
-
-        <view class="ai-page__toolbar">
-          <u-button plain size="mini" type="primary" @click="CopyResult">复制全文</u-button>
-          <u-button :loading="state.loading" size="mini" type="primary" @click="Regenerate">重新生成</u-button>
-        </view>
-
-        <view class="ai-page__summary">
-          <text class="ai-page__summary-label">解读摘要</text>
-          <text class="ai-page__summary-content">{{ state.summaryText }}</text>
-        </view>
-
-        <view class="ai-page__meta">
-          <view class="ai-page__meta-item">
-            <text class="ai-page__meta-label">命主</text>
-            <text class="ai-page__meta-value">{{ form.realname || '不知名网友' }}</text>
-          </view>
-          <view class="ai-page__meta-item">
-            <text class="ai-page__meta-label">性别</text>
-            <text class="ai-page__meta-value">{{ form.gender === 1 ? '男' : '女' }}</text>
-          </view>
-          <view class="ai-page__meta-item ai-page__meta-item--full">
-            <text class="ai-page__meta-label">出生地</text>
-            <text class="ai-page__meta-value">{{ form.birthRegionLabel }}</text>
-          </view>
-          <view class="ai-page__meta-item ai-page__meta-item--full">
-            <text class="ai-page__meta-label">出生时间</text>
-            <text class="ai-page__meta-value">{{ form.datetimeLabel }}</text>
-          </view>
-        </view>
-
-        <view v-for="(item, index) in state.resultSections" :key="item.title + item.content + index" class="ai-page__section">
-          <view class="ai-page__section-head">
-            <view class="ai-page__section-index">{{ index + 1 }}</view>
-            <text class="ai-page__section-title">{{ item.title }}</text>
-          </view>
-          <text class="ai-page__section-content" decode>{{ item.content }}</text>
-        </view>
-
-        <view class="ai-page__notice">
-          <text class="ai-page__notice-text">提示：AI 结果会受模型能力、出生地信息完整度和排盘数据影响，请结合实际情况理性参考。</text>
-        </view>
-      </yx-sheet>
+      <ai-result-card
+        :form="form"
+        :state="state"
+        @copy="CopyResult"
+        @regenerate="Regenerate"
+      ></ai-result-card>
     </view>
 
     <u-picker
@@ -134,56 +47,31 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { Solar } from 'lunar-javascript';
 import { GetAIInterpretation } from '@/api/ai';
 import { getLocalStorage, setLocalStorage } from '@/utils/cache';
-import { CHART_PREPARE_ERROR, prepareChart } from '@/utils/chart';
-import { timeFormat } from '@/utils/transform';
+import { prepareChart } from '@/utils/chart';
 import { useBookStore } from '@/store/book';
 import { useDetailStore } from '@/store/detail';
 import { useTendStore } from '@/store/tend';
+import AiFormCard from './components/ai-form-card.vue';
+import AiResultCard from './components/ai-result-card.vue';
+import {
+  AI_REGION_CACHE_KEY,
+  applyRegion,
+  buildInstruction,
+  createAIForm,
+  createAIOptions,
+  createAIState,
+  fillBaseForm,
+  getErrorMessage,
+  getSummaryText,
+  parseResultSections,
+  updateDatetimeLabel,
+} from './ai-helpers';
 
-const AI_REGION_CACHE_KEY = 'ai-region';
-
-const options = ref({
-  gender: [{ value: 1, label: '男' }, { value: 2, label: '女' }],
-  sect: [{ value: 1, label: '晚子时日柱算明天' }, { value: 2, label: '晚子时日柱算当天' }],
-  timePicker: {
-    year: true,
-    month: true,
-    day: true,
-    hour: true,
-    minute: true,
-    second: false,
-  },
-  regionPicker: {
-    province: true,
-    city: true,
-    area: true,
-  },
-});
-
-const form = reactive({
-  realname: '',
-  gender: 1,
-  sect: 1,
-  timestamp: null,
-  defaultTime: '2001-01-01 00:00:00',
-  datetimeLabel: '',
-  lunarLabel: '',
-  birthProvince: '',
-  birthCity: '',
-  birthDistrict: '',
-  birthRegionLabel: '',
-  defaultRegion: [],
-});
-
-const state = reactive({
-  loading: false,
-  resultText: '',
-  summaryText: '',
-  resultSections: [],
-});
+const options = reactive(createAIOptions());
+const form = reactive(createAIForm());
+const state = reactive(createAIState());
 
 const solarSelectShow = ref(false);
 const regionSelectShow = ref(false);
@@ -192,155 +80,6 @@ const detailStore = useDetailStore();
 const bookStore = useBookStore();
 const tendStore = useTendStore();
 
-const headingRegExp = /^(#{1,6}\s*.+|(?:\d+[、.]|[一二三四五六七八九十]+[、.]|（[一二三四五六七八九十]+）).+)$/;
-
-const buildInstruction = () => {
-  return [
-    '请根据以下结构化排盘数据，给出中文、专业、具体、可执行的命理解读。',
-    '输出时请至少覆盖以下主题：',
-    '1. 五行属性与整体格局判断',
-    '2. 日主、身强身弱、喜用神、忌用神',
-    '3. 适合佩戴的首饰材质、颜色、数量、珠子尺寸、搭配建议',
-    '4. 左手、右手、胸前分别适合佩戴什么，以及原因',
-    '5. 适合的颜色、忌用颜色，以及日常穿搭建议',
-    '6. 结合大运流年给出近期需要注意的方向',
-    '7. 补充你认为重要但用户未主动提及的建议',
-    '请尽量按标题分节输出，每节给出明确结论和原因，避免空泛表述。',
-  ].join('\n');
-};
-
-const getErrorMessage = error => {
-  const map = {
-    [CHART_PREPARE_ERROR.GET_INFO]: '获取命盘信息失败！',
-    [CHART_PREPARE_ERROR.GET_BOOK]: '获取命盘古籍失败！',
-    LLM_API_URL_MISSING: '请先配置 VITE_LLM_API_URL',
-    LLM_API_KEY_MISSING: '请先配置 VITE_LLM_API_KEY',
-    LLM_MODEL_MISSING: '请先配置 VITE_LLM_MODEL',
-    LLM_RESPONSE_EMPTY: 'AI 暂未返回有效内容，请稍后重试',
-  };
-
-  return map[error?.message] || error?.msg || 'AI 解读生成失败，请稍后重试';
-};
-
-const cleanHeadingText = text => {
-  return text
-    .replace(/^#{1,6}\s*/, '')
-    .replace(/^\d+[、.]\s*/, '')
-    .replace(/^[一二三四五六七八九十]+[、.]\s*/, '')
-    .replace(/^（[一二三四五六七八九十]+）\s*/, '')
-    .trim();
-};
-
-const parseResultSections = content => {
-  const lines = content
-    .replace(/\r/g, '')
-    .split('\n')
-    .map(item => item.trim());
-
-  const sections = [];
-  let current = null;
-
-  const pushCurrent = () => {
-    if (!current) {
-      return;
-    }
-
-    const contentText = current.lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-    if (!contentText) {
-      return;
-    }
-
-    sections.push({
-      title: current.title || `解读 ${sections.length + 1}`,
-      content: contentText,
-    });
-  };
-
-  lines.forEach(line => {
-    if (!line) {
-      if (current?.lines?.length) {
-        current.lines.push('');
-      }
-      return;
-    }
-
-    if (headingRegExp.test(line)) {
-      pushCurrent();
-      current = {
-        title: cleanHeadingText(line),
-        lines: [],
-      };
-      return;
-    }
-
-    if (!current) {
-      current = {
-        title: '综合解读',
-        lines: [],
-      };
-    }
-
-    current.lines.push(line.replace(/^[-*•]\s*/, '• '));
-  });
-
-  pushCurrent();
-
-  if (sections.length) {
-    return sections;
-  }
-
-  const blocks = content
-    .replace(/\r/g, '')
-    .split(/\n\s*\n/)
-    .map(item => item.trim())
-    .filter(Boolean);
-
-  return blocks.map((item, index) => ({
-    title: `解读 ${index + 1}`,
-    content: item,
-  }));
-};
-
-const getSummaryText = (content, sections) => {
-  const summarySource = sections[0]?.content || content || '';
-  return summarySource.replace(/\s+/g, ' ').slice(0, 120);
-};
-
-const updateDatetimeLabel = () => {
-  if (!form.timestamp) {
-    form.datetimeLabel = '';
-    form.lunarLabel = '';
-    return;
-  }
-
-  const solar = Solar.fromDate(new Date(form.timestamp));
-  const lunar = solar.getLunar();
-  form.datetimeLabel = timeFormat(form.timestamp);
-  form.lunarLabel = `${lunar.toString()} ${lunar.getTimeZhi()}时`;
-  form.defaultTime = uni.$u.date(form.timestamp, 'yyyy-mm-dd hh:MM:ss');
-};
-
-const fillBaseForm = payload => {
-  if (!payload) {
-    updateDatetimeLabel();
-    return;
-  }
-
-  form.realname = payload.realname || '';
-  form.gender = Number(payload.gender) === 1 ? 1 : 2;
-  form.sect = payload.sect ?? 1;
-  form.timestamp = payload.timestamp ? Number(payload.timestamp) : null;
-  updateDatetimeLabel();
-};
-
-const applyRegion = region => {
-  form.birthProvince = region?.birthProvince || '';
-  form.birthCity = region?.birthCity || '';
-  form.birthDistrict = region?.birthDistrict || '';
-  form.defaultRegion = [form.birthProvince, form.birthCity, form.birthDistrict].filter(Boolean);
-  form.birthRegionLabel = form.defaultRegion.join(' ');
-};
-
 const loadRegionCache = () => {
   const raw = getLocalStorage(AI_REGION_CACHE_KEY);
   if (!raw) {
@@ -348,18 +87,21 @@ const loadRegionCache = () => {
   }
 
   try {
-    applyRegion(JSON.parse(raw));
+    applyRegion(form, JSON.parse(raw));
   } catch (error) {
-    applyRegion(null);
+    applyRegion(form, null);
   }
 };
 
 const saveRegionCache = () => {
-  setLocalStorage(AI_REGION_CACHE_KEY, JSON.stringify({
-    birthProvince: form.birthProvince,
-    birthCity: form.birthCity,
-    birthDistrict: form.birthDistrict,
-  }));
+  setLocalStorage(
+    AI_REGION_CACHE_KEY,
+    JSON.stringify({
+      birthProvince: form.birthProvince,
+      birthCity: form.birthCity,
+      birthDistrict: form.birthDistrict,
+    })
+  );
 };
 
 const buildProfile = () => {
@@ -414,16 +156,16 @@ onLoad((query) => {
     }
   }
 
-  const fallback = detailStore.timestamp ? {
-    realname: detailStore.realname,
-    gender: detailStore.gender,
-    sect: detailStore.sect,
-    timestamp: detailStore.timestamp,
-  } : cache;
+  const fallback = detailStore.timestamp
+    ? {
+        realname: detailStore.realname,
+        gender: detailStore.gender,
+        sect: detailStore.sect,
+        timestamp: detailStore.timestamp,
+      }
+    : cache;
 
-  const nextPayload = fallback ? {
-    ...fallback,
-  } : {};
+  const nextPayload = fallback ? { ...fallback } : {};
 
   if (query.time) {
     nextPayload.timestamp = Number(query.time);
@@ -433,7 +175,7 @@ onLoad((query) => {
     nextPayload.gender = Number(query.gender) === 1 ? 1 : 2;
   }
 
-  fillBaseForm(nextPayload);
+  fillBaseForm(form, nextPayload);
   loadRegionCache();
 });
 
@@ -449,11 +191,11 @@ function SolarConfirm(params) {
   const { year, month, day, hour, minute } = params;
   const time = `${year}/${month}/${day} ${hour}:${minute}`;
   form.timestamp = new Date(time).getTime();
-  updateDatetimeLabel();
+  updateDatetimeLabel(form);
 }
 
 function RegionConfirm(params) {
-  applyRegion({
+  applyRegion(form, {
     birthProvince: params.province?.name || '',
     birthCity: params.city?.name || '',
     birthDistrict: params.area?.name || '',
@@ -523,7 +265,7 @@ function CopyResult() {
     data: state.resultText,
     success() {
       uni.$u.toast('解读内容已复制');
-    }
+    },
   });
 }
 </script>
