@@ -5,7 +5,12 @@
       "Bash(git:*)",
       "Bash(yarn run:*)",
       "Bash(npm:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(python:*)",
+      "Bash(wc:*)",
+      "Bash(node:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx eslint:*)"
     ]
   }
 }
