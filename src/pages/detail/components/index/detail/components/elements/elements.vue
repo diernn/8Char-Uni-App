@@ -16,24 +16,21 @@
         </view>
       </view>
     </view>
-    <template v-for="(item, index) in els">
-      <view class="u-flex u-row-center u-m-y-20">
-        <text class="yx-text-weight-b u-p-r-16">{{ ELEMENT.labels[index] }}</text>
-        <view style="width: 100%;">
-          <u-line-progress
-              :active-color="colors[index]"
-              :height="32"
-              :percent="item.sacle"
-              striped
-          >
-            <text></text>
-          </u-line-progress>
-        </view>
-        <view class="yx-text-weight-b u-text-right" style="width: 200rpx;">
-          {{ item.total + '个 ' + detailStore.element.relation[index] }}
-        </view>
+    <view
+      v-for="(item, index) in els"
+      :key="`${ELEMENT.labels[index]}-${index}`"
+      class="u-flex u-row-center u-m-y-20"
+    >
+      <text class="yx-text-weight-b u-p-r-16">{{ ELEMENT.labels[index] }}</text>
+      <view style="width: 100%">
+        <u-line-progress :active-color="colors[index]" :height="32" :percent="item.sacle" striped>
+          <text></text>
+        </u-line-progress>
       </view>
-    </template>
+      <view class="yx-text-weight-b u-text-right" style="width: 200rpx">
+        {{ item.total + '个 ' + detailStore.element.relation[index] }}
+      </view>
+    </view>
     <view class="u-m-t-40">
       <pro-decl auto></pro-decl>
     </view>
@@ -41,17 +38,17 @@
 </template>
 
 <script setup>
-import {ref, computed} from 'vue';
+import { computed, ref } from 'vue';
 import ProDecl from '../../../common/pro-decl/pro-decl.vue';
-import {useDetailStore} from "@/store/detail";
-import {ELEMENT} from "@/config/map";
+import { useDetailStore } from '@/store/detail';
+import { ELEMENT } from '@/config/map';
 
 const detailStore = useDetailStore();
 const colors = ELEMENT.colors;
-const isInclude = ref(false)
+const isInclude = ref(false);
 
-const els = computed(()=>{
-  const key = isInclude.value?"include":"ninclude"
-  return detailStore.element[key].list
-})
+const els = computed(() => {
+  const key = isInclude.value ? 'include' : 'ninclude';
+  return detailStore.element[key].list;
+});
 </script>
